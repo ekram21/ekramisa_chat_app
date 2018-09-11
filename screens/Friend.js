@@ -9,6 +9,49 @@ export default class Friend extends React.Component {
         fetchedData: [],
     }
 
+    componentWillMount(){
+
+        let ownEmail_ = firebase.auth().currentUser.email;
+
+        thisObject = this;
+
+        let rows = [];
+
+        let newDatabase = firebase.database();
+
+        let ref = newDatabase.ref('USERS/').once('value').then(function (snapshot) {
+
+            let friendUID_arr = [];
+            let friendName_arr = [];
+
+            let myData = snapshot.val();
+
+            //need to iterate over this and extract the user names
+            let key;
+            for (key in myData) {
+                friendUID_arr.push(key);
+                name_ = myData[key]['UserName'];
+                friendName_arr.push(name_);
+            };
+
+            //now create the elements for front end
+            for (let i = 0; i < friendName_arr.length; i++) {
+
+                if (friendName_arr[i] != ownEmail_) {
+
+                    rows.push(<TouchableOpacity onPress={() => thisObject.openFriendChat(friendUID_arr[i], friendName_arr[i])} key={i} style={styles.button_}><Text style={styles.friendName}>{friendName_arr[i]}</Text></TouchableOpacity>)
+                }
+
+            }
+
+            thisObject.setState({
+                dataFetchedBoolean: true,
+                fetchedData: rows
+            })
+
+        });
+    }
+
     //access the firebase and get the name
 
     static navigationOptions = {
@@ -42,41 +85,6 @@ export default class Friend extends React.Component {
     }
 
     render(){
-
-        thisObject = this;
-
-        let rows = [];
-
-        let newDatabase = firebase.database();
-
-        let ref = newDatabase.ref('USERS/').once('value').then(function (snapshot) {
-
-            let friendUID_arr = [];
-            let friendName_arr = [];
-
-            let myData = snapshot.val();
-
-            //need to iterate over this and extract the user names
-            let key;
-            for (key in myData) {
-                friendUID_arr.push(key);
-                name_ = myData[key]['UserName'];
-                friendName_arr.push(name_);
-            };
-
-            //now create the elements for front end
-            for (let i = 0; i < friendName_arr.length; i++) {
-
-                rows.push(<TouchableOpacity onPress={() => thisObject.openFriendChat(friendUID_arr[i],friendName_arr[i])} key={i} style={styles.button_}><Text style={styles.friendName}>{friendName_arr[i]}</Text></TouchableOpacity>)
-
-            }
-
-            thisObject.setState({
-                dataFetchedBoolean: true,
-                fetchedData : rows
-            })
-
-        });
 
         return (
             <View style={styles.container}>

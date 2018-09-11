@@ -1,11 +1,22 @@
 import React from 'react';
 import { ScrollView, View, StyleSheet, Keyboard } from 'react-native';
-
+import firebase from 'firebase';
 
 import { ChatInput } from '../components/ChatInput';
 import { SendMessageButton } from '../components/SendMessageButton';
 import { ChatMessage } from '../components/ChatMessage';
 
+function EncodeString(inputString){
+    outputstring = encodeURIComponent(inputString).replace(/\./g, '%2E');
+    return outputstring;
+}
+
+function DecodeString(inputString){
+    outputstring = decodeURIComponent(inputString);
+    withoutdots = outputstring.replace('%2E','.');
+
+    return withoutdots;
+}
 export default class Chat extends React.Component {
 
     static navigationOptions = ({ navigation }) => ({ title: navigation.state.params.title || 'a',});
@@ -43,14 +54,60 @@ export default class Chat extends React.Component {
 
     SendMessage(){
         console.log('send message pressed!');
-        //console.log(this.props.navigation.getParam('clickedFriendEmail'));
-        //console.log(this.props.navigation.getParam('clickedFriendUID'));
 
         //access the firebase database and store this message
         let messageToSend = this.state.innerMessage;
 
-        let Owner = global.ownerUID;
-        let Friend = this.props.navigation.getParam('clickedFriendUID');
+        let OwnerUID = firebase.auth().currentUser.uid;
+        let OwnerEmail = firebase.auth().currentUser.email;
+
+        let FriendUID = this.props.navigation.getParam('clickedFriendUID');
+        let FriendEmail = this.props.navigation.getParam('clickedFriendEmail');
+
+        let messageWriter = EncodeString(OwnerEmail);
+
+        let d = new Date();
+        d.toUTCString();
+
+        let onlyTime = String(d).split(' ')[4];
+
+        let ownRoomID = 'MessageRoom' + OwnerUID + FriendUID;
+
+        let database = firebase.database();
+
+        let ref = database.ref('USERS/' + OwnerUID + '/' + EncodeString(OwnerEmail) + '/' + ownRoomID + '/');
+
+        let data = {};
+
+        data[messageWriter] = {};
+
+        data[messageWriter] = {
+            [onlyTime]: messageToSend
+        };
+
+        ref.push(data).then(function(){
+            console.log('successfully sent message..');
+
+            //now write this message in friends database
+            let friendRoomID = 'MessageRoom' + FriendUID + OwnerUID;
+
+            let database = firebase.database();
+
+            let ref = database.ref('USERS/' + FriendUID + '/' + EncodeString(FriendEmail) + '/' + friendRoomID + '/');
+
+            let data = {};
+
+            data[messageWriter] = {};
+
+            data[messageWriter] = {
+                [onlyTime]: messageToSend
+            };
+
+            ref.push(data);
+
+            alert('data sent!');
+
+        })
 
     }
 

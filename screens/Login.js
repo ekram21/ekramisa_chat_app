@@ -52,9 +52,6 @@ export default class Login extends React.Component {
 
             let curUser = firebase.auth().currentUser;
 
-            global.ownerUID = curUser.uid;
-            global.ownerEmail = curUser.email;
-
             //create the empty database for this new user
             let database = firebase.database();
 
@@ -71,7 +68,7 @@ export default class Login extends React.Component {
                     authenticating: false
                 })
 
-                LoginThisObject.props.navigation.replace('FriendScreen');
+                LoginThisObject.props.navigation.replace('FriendScreen', { ownEmail: curUser.email});
 
             });
 
