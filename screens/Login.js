@@ -52,10 +52,13 @@ export default class Login extends React.Component {
 
             let curUser = firebase.auth().currentUser;
 
+            global.ownerUID = curUser.uid;
+            global.ownerEmail = curUser.email;
+
             //create the empty database for this new user
             let database = firebase.database();
 
-            let ref = database.ref('USERS/' + curUser.uid);
+            let ref = database.ref('USERS/' + global.ownerUID);
 
             let data = {
                 UserName: curUser.email
@@ -95,7 +98,6 @@ export default class Login extends React.Component {
         const auth = firebase.auth()
 
         const promise = auth.signInWithEmailAndPassword(this.state.email, this.state.password).then(function (user) {
-            alert('Login Successful!');
             console.log('Login Successful');
  
             LoginThisObject.setState({
@@ -172,7 +174,7 @@ export default class Login extends React.Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        top: '25%',
+        top: '10%',
         padding: 20,
         paddingTop: 25,
         //alignItems: 'center',

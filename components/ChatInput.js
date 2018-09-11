@@ -3,7 +3,7 @@ import { StyleSheet, View, TextInput } from 'react-native';
 
 import { Item, Label } from 'native-base';
 
-const ChatInput = ({ value, onChangeText, placeholder, secureTextEntry }) => {
+const ChatInput = ({ value, onChangeText, onFocus, placeholder, secureTextEntry }) => {
 
     return (
 
@@ -13,6 +13,7 @@ const ChatInput = ({ value, onChangeText, placeholder, secureTextEntry }) => {
                 autoCorrect={false}
                 autoCapitalize="none"
                 onChangeText={onChangeText}
+                onFocus = {onFocus}
                 placeholder={placeholder}
                 style={styles.input}
                 secureTextEntry={secureTextEntry}
