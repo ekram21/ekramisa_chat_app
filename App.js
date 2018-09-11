@@ -11,6 +11,7 @@ import Chat from './screens/Chat';
 const AppNavigator = createStackNavigator({
     LoginScreen: Login,
     FriendScreen: Friend,
+    ChatScreen: Chat,
 });
 
 
@@ -18,7 +19,7 @@ export default class App extends React.Component {
 
     render() {
     return (
-            <Chat />
+        <AppNavigator />
     );
   }
 }

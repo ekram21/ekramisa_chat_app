@@ -8,16 +8,22 @@ import { ChatMessage } from '../components/ChatMessage';
 
 export default class Chat extends React.Component {
 
-    static navigationOptions = {
-        title: 'Ramisa.ib1',
-    };
+    static navigationOptions = ({ navigation }) => ({
+        title: typeof (navigation.state.params) === 'undefined' || typeof (navigation.state.params.title) === 'undefined' ? 'find' : navigation.state.params.title,
+    });
 
     SendMessage(){
-        console.log('send message pressed!')
-
+        console.log('send message pressed!');
+        console.log(this.props.navigation.getParam('clickedFriendEmail'));
+        console.log(this.props.navigation.getParam('clickedFriendUID'));
     }
 
     render() {
+
+        //change the title to be the person you are chatting with
+        UserName = this.props.navigation.getParam('clickedFriendEmail').split('@')[0];
+        this.props.navigation.setParams({ title: UserName })
+
         return (
             <View style={styles.container}>
 

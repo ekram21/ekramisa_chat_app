@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
+import { Text, View, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import firebase from 'firebase';
 
 export default class Friend extends React.Component {
@@ -15,6 +15,14 @@ export default class Friend extends React.Component {
         title: 'Friends',
     };
 
+    openFriendChat(friendUID, friendEmail){
+        console.log(friendUID);
+        console.log(friendEmail);
+
+        //now just need to navigate to chat screen with these UID and Email name
+        this.props.navigation.navigate('ChatScreen', { clickedFriendUID: friendUID, clickedFriendEmail: friendEmail});
+    }
+
     renderCurrentState(){
         //update render after 
         if (!this.state.dataFetchedBoolean){
@@ -26,9 +34,9 @@ export default class Friend extends React.Component {
         }
         else {
             return(
-                <View>
+                <ScrollView>
                     {this.state.fetchedData}
-                </View>
+                </ScrollView>
             )
         }
     }
@@ -43,6 +51,7 @@ export default class Friend extends React.Component {
 
         let ref = newDatabase.ref('USERS/').once('value').then(function (snapshot) {
 
+            let friendUID_arr = [];
             let friendName_arr = [];
 
             let myData = snapshot.val();
@@ -50,6 +59,7 @@ export default class Friend extends React.Component {
             //need to iterate over this and extract the user names
             let key;
             for (key in myData) {
+                friendUID_arr.push(key);
                 name_ = myData[key]['UserName'];
                 friendName_arr.push(name_);
             };
@@ -57,7 +67,7 @@ export default class Friend extends React.Component {
             //now create the elements for front end
             for (let i = 0; i < friendName_arr.length; i++) {
 
-                rows.push(<TouchableOpacity key={i} style={styles.button_}><Text style={styles.friendName}>{friendName_arr[i]}</Text></TouchableOpacity>)
+                rows.push(<TouchableOpacity onPress={() => thisObject.openFriendChat(friendUID_arr[i],friendName_arr[i])} key={i} style={styles.button_}><Text style={styles.friendName}>{friendName_arr[i]}</Text></TouchableOpacity>)
 
             }
 
